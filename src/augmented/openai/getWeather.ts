@@ -63,13 +63,20 @@ async function getWeather(location: string, units: string = "metric") {
 async function askAboutWeather() {
   const openai = new OpenAI();
 
+  const initialMessages = [
+    {
+      role: "system",
+      content:
+        "You are a helpful assistant that can answer questions about the weather. Use the weather tool to get the current weather data for a location.",
+    },
+    { role: "user", content: "What's the weather like in Paris today?" },
+  ] as const;
+
   try {
     // Initial chat completion with the weather tool
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      messages: [
-        { role: "user", content: "What's the weather like in Paris today?" },
-      ],
+      messages: initialMessages,
       tools: [weatherTool],
     });
 
@@ -77,15 +84,19 @@ async function askAboutWeather() {
     const toolCalls = completion.choices[0].message.tool_calls;
 
     if (toolCalls) {
-      // Handle each tool call
-      const messages = [completion.choices[0].message];
+      // Create conversation history including the initial messages
+      const conversationMessages = [
+        ...initialMessages,
+        completion.choices[0].message,
+      ];
 
+      // Handle each tool call
       for (const toolCall of toolCalls) {
         if (toolCall.function.name === "get_weather") {
           const args = JSON.parse(toolCall.function.arguments);
           const weatherData = await getWeather(args.location, args.units);
 
-          messages.push({
+          conversationMessages.push({
             role: "tool",
             tool_call_id: toolCall.id,
             content: JSON.stringify(weatherData),
@@ -93,12 +104,13 @@ async function askAboutWeather() {
         }
       }
 
-      // Get final response incorporating weather data
+      // Get final response incorporating all conversation history
       const finalResponse = await openai.chat.completions.create({
         model: "gpt-4o",
-        messages: [...messages],
+        messages: conversationMessages,
       });
 
+      console.log("Full conversation:", conversationMessages);
       console.log(finalResponse.choices[0].message.content);
     }
   } catch (error) {
