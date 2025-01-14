@@ -110,8 +110,12 @@ async function askAboutWeather(city: string) {
         messages: conversationMessages,
       });
 
-      console.log("Full conversation:", conversationMessages);
-      console.log(finalResponse.choices[0].message.content);
+      //   console.log("Full conversation:", conversationMessages);
+      //   console.log(finalResponse.choices[0].message.content);
+      return finalResponse.choices[0].message.content;
+    } else {
+      // console.log("No tool calls found");
+      return completion.choices[0].message.content;
     }
   } catch (error) {
     console.error("Error:", error);
@@ -119,4 +123,5 @@ async function askAboutWeather(city: string) {
 }
 
 // Call the function
-askAboutWeather("Oslo");
+const weather = await askAboutWeather("Oslo");
+console.log(weather);
