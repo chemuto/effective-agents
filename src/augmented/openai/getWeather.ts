@@ -66,7 +66,7 @@ async function askAboutWeather() {
   try {
     // Initial chat completion with the weather tool
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       messages: [
         { role: "user", content: "What's the weather like in Paris today?" },
       ],
@@ -95,7 +95,7 @@ async function askAboutWeather() {
 
       // Get final response incorporating weather data
       const finalResponse = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4o",
         messages: [...messages],
       });
 
