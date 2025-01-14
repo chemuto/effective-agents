@@ -60,7 +60,7 @@ async function getWeather(location: string, units: string = "metric") {
 }
 
 // Chat completion function that uses the weather tool
-async function askAboutWeather() {
+async function askAboutWeather(city: string) {
   const openai = new OpenAI();
 
   const initialMessages = [
@@ -69,7 +69,7 @@ async function askAboutWeather() {
       content:
         "You are a helpful assistant that can answer questions about the weather. Use the weather tool to get the current weather data for a location.",
     },
-    { role: "user", content: "What's the weather like in Paris today?" },
+    { role: "user", content: `What's the weather like in ${city} today?` },
   ] as const;
 
   try {
@@ -119,4 +119,4 @@ async function askAboutWeather() {
 }
 
 // Call the function
-askAboutWeather();
+askAboutWeather("Oslo");
