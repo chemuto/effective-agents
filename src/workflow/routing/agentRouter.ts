@@ -7,7 +7,7 @@ dotenv.config();
 /*
  * The router agent is to send the user input to the correct agent
  */
-async function routerAgent(prompt: string): Promise<string> {
+async function routerAgent(prompt: string) {
   const openai = new OpenAI();
 
   try {
